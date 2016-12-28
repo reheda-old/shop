@@ -31,7 +31,6 @@
 		<property name="viewClass" value="org.springframewrok.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/" />
 		<property name="suffix" value=".jsp" />
-
 	</bean>
 	
 	<mvc:resources location="/css/" mapping="/css/**"/>
@@ -40,6 +39,45 @@
 	
 	<context:property-placeholder location="classpath:application.properties"/>
 
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+	<value>edu.shop.java.models</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hdm2ddl.auto">update</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySqlDialect</prop>
+				<prop key="hibernate.connection.charSet">UTF-8</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id ="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransaction">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/> 
+	
+	
+	
+	<bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="droverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="${db.url}" />
+		<property name="username" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+		<property name="initialSize" value="5" />
+		<property name="maxActive" value="10" />
+		<property name="maxIdle" value="5" />
+		<property name="minIDle" value="2" />
+	</bean>
+	
+	
 	<security:http pattern="/css/**" security="none"/>
 	<security:http pattern="/images/**" security="none"/>
 	<security:http pattern="/js/**" security="none"/>
